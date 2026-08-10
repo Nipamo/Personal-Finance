@@ -1,14 +1,173 @@
 <!DOCTYPE html>
-
-<html lang="en">
+<html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Finance</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finanzübersicht</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h1>Welcome to Personal Finance</h1>
-<p>Manage your finances effectively with our tools and resources.</p>
-<h2>Deine Konten:</h2>
+
+  <div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand__mark">§</span>
+        <span class="brand__name">Hauptbuch</span>
+      </div>
+
+      <nav class="nav" aria-label="Hauptnavigation">
+        <a class="nav__item nav__item--active" href="#">
+          <span class="nav__label">Übersicht</span>
+        </a>
+        <a class="nav__item" href="#">
+          <span class="nav__label">Budgets</span>
+        </a>
+        <a class="nav__item" href="#">
+          <span class="nav__label">Transaktionen</span>
+        </a>
+        <a class="nav__item" href="#">
+          <span class="nav__label">Statistiken</span>
+        </a>
+        <a class="nav__item" href="#">
+          <span class="nav__label">Einstellungen</span>
+        </a>
+      </nav>
+
+      <div class="sidebar__footer">
+        <span class="sidebar__period">Berichtszeitraum</span>
+        <span class="sidebar__month">August 2026</span>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="main">
+
+      <header class="topbar">
+        <div class="topbar__month">
+          <button class="month-nav" aria-label="Vorheriger Monat">‹</button>
+          <span>August 2026</span>
+          <button class="month-nav" aria-label="Nächster Monat">›</button>
+        </div>
+        <button class="btn btn--primary">+ Neue Transaktion</button>
+      </header>
+
+      <main class="content">
+
+        <!-- Hero balance -->
+        <section class="hero" aria-labelledby="hero-heading">
+          <p class="eyebrow">Gesamtsaldo</p>
+          <h1 id="hero-heading" class="hero__amount">
+            <span class="hero__currency">€</span>4.812<span class="hero__decimals">,40</span>
+          </h1>
+          <p class="hero__delta hero__delta--positive">+312,50 € gegenüber Juli</p>
+        </section>
+
+        <!-- Budget cards -->
+        <section aria-labelledby="budgets-heading" class="section">
+          <div class="section__head">
+            <h2 id="budgets-heading">Budgets diesen Monat</h2>
+            <a class="section__link" href="#">Alle anzeigen</a>
+          </div>
+
+          <div class="budget-grid">
+
+            <article class="budget-card">
+              <div class="budget-card__head">
+                <span class="budget-card__label">Lebensmittel</span>
+                <span class="budget-card__figures">320 / 400 €</span>
+              </div>
+              <div class="budget-card__track">
+                <div class="budget-card__fill" style="width: 80%"></div>
+              </div>
+              <p class="budget-card__note">80 € übrig</p>
+            </article>
+
+            <article class="budget-card">
+              <div class="budget-card__head">
+                <span class="budget-card__label">Freizeit</span>
+                <span class="budget-card__figures">145 / 150 €</span>
+              </div>
+              <div class="budget-card__track">
+                <div class="budget-card__fill budget-card__fill--warn" style="width: 97%"></div>
+              </div>
+              <p class="budget-card__note budget-card__note--warn">5 € übrig</p>
+            </article>
+
+            <article class="budget-card">
+              <div class="budget-card__head">
+                <span class="budget-card__label">Transport</span>
+                <span class="budget-card__figures">210 / 180 €</span>
+              </div>
+              <div class="budget-card__track">
+                <div class="budget-card__fill budget-card__fill--over" style="width: 100%"></div>
+              </div>
+              <p class="budget-card__note budget-card__note--over">30 € über Budget</p>
+            </article>
+
+          </div>
+        </section>
+
+        <!-- Ledger table -->
+        <section aria-labelledby="ledger-heading" class="section">
+          <div class="section__head">
+            <h2 id="ledger-heading">Letzte Transaktionen</h2>
+            <a class="section__link" href="#">Alle anzeigen</a>
+          </div>
+
+          <div class="ledger">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Datum</th>
+                  <th scope="col">Beschreibung</th>
+                  <th scope="col">Kategorie</th>
+                  <th scope="col" class="align-right">Betrag</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>08.08.</td>
+                  <td>Supermarkt Nord</td>
+                  <td><span class="tag">Lebensmittel</span></td>
+                  <td class="align-right amount amount--negative">−48,20 €</td>
+                </tr>
+                <tr>
+                  <td>07.08.</td>
+                  <td>Gehalt August</td>
+                  <td><span class="tag">Einkommen</span></td>
+                  <td class="align-right amount amount--positive">+2.850,00 €</td>
+                </tr>
+                <tr>
+                  <td>05.08.</td>
+                  <td>Deutsche Bahn</td>
+                  <td><span class="tag">Transport</span></td>
+                  <td class="align-right amount amount--negative">−64,90 €</td>
+                </tr>
+                <tr>
+                  <td>03.08.</td>
+                  <td>Kino</td>
+                  <td><span class="tag">Freizeit</span></td>
+                  <td class="align-right amount amount--negative">−22,00 €</td>
+                </tr>
+                <tr>
+                  <td>01.08.</td>
+                  <td>Miete</td>
+                  <td><span class="tag">Wohnen</span></td>
+                  <td class="align-right amount amount--negative">−890,00 €</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
 </body>
 </html>
