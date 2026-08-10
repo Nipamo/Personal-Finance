@@ -364,6 +364,91 @@ button {
 .budget-card__note--over { color: var(--negative); }
 
 /* ---------------------------------------------
+   Page head (non-monthly pages)
+--------------------------------------------- */
+.page-head {
+  margin-bottom: 4px;
+}
+
+.page-head h1 {
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+
+.page-head p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+/* ---------------------------------------------
+   Account cards
+--------------------------------------------- */
+.account-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.account-card {
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.account-card__institute {
+  margin: 0;
+}
+
+.account-card__name {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.account-card__type {
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-top: -6px;
+}
+
+.account-card__balance {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 24px;
+  margin-top: 6px;
+}
+
+.account-card__balance--positive { color: var(--positive); }
+.account-card__balance--negative { color: var(--negative); }
+
+.account-card--add {
+  border: 1px dashed var(--line-strong);
+  background: transparent;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--ink-soft);
+  cursor: pointer;
+  min-height: 108px;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.account-card--add:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.account-card--add span {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ---------------------------------------------
    Ledger table
 --------------------------------------------- */
 .ledger {

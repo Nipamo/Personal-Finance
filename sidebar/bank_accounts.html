@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bankkonten – Finanzübersicht</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+
+</head>
+<body>
+
+<div class="app">
+
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand__mark">§</span>
+        <span class="brand__name">Hauptbuch</span>
+      </div>
+
+      <nav class="nav" aria-label="Hauptnavigation">
+        <a class="nav__item" href="../index.html">
+          <span class="nav__label">Übersicht</span>
+        </a>
+        <a class="nav__item nav__item--active" href="bankkonten.html">
+          <span class="nav__label">Konten</span>
+        </a>
+      </nav>
+
+      <div class="sidebar__footer">
+        <span class="sidebar__period">Berichtszeitraum</span>
+        <span class="sidebar__month">August 2026</span>
+      </div>
+    </aside>
+
+    <div class="main">
+
+        <header class="topbar">
+          <div class="topbar__month">
+            <span>Konten</span>
+          </div>
+          <button class="btn btn--primary">+ Konto hinzufügen</button>
+        </header>
+
+        <main class="content">
+
+            <section class="hero" aria-labelledby="networth-heading">
+              <p class="eyebrow">Gesamtvermögen</p>
+              <h2 id="networth-heading" class="hero__amount">
+                <span class="hero__currency">€</span>10.419<span class="hero__decimals">,43</span>
+              </h2>
+              <p class="hero__delta hero__delta--positive">3 Konten verknüpft</p>
+            </section>
+
+            <section aria-labelledby="accounts-heading" class="section">
+              <div class="section__head">
+                <h2 id="accounts-heading">Ihre Konten</h2>
+              </div>
+
+              <div class="account-grid">
+
+                <article class="account-card">
+                  <p class="eyebrow account-card__institute">Sparkasse</p>
+                  <span class="account-card__name">Girokonto</span>
+                  <span class="account-card__type">Laufendes Konto</span>
+                  <span class="account-card__balance account-card__balance--positive">2.340,18 €</span>
+                </article>
+
+                <article class="account-card">
+                  <p class="eyebrow account-card__institute">ING</p>
+                  <span class="account-card__name">Tagesgeldkonto</span>
+                  <span class="account-card__type">Rücklagen</span>
+                  <span class="account-card__balance account-card__balance--positive">8.500,00 €</span>
+                </article>
+
+                <article class="account-card">
+                  <p class="eyebrow account-card__institute">DKB</p>
+                  <span class="account-card__name">Kreditkarte</span>
+                  <span class="account-card__type">Revolvierender Kredit</span>
+                  <span class="account-card__balance account-card__balance--negative">−420,75 €</span>
+                </article>
+
+                <button class="account-card account-card--add" type="button">
+                  <span>+ Konto hinzufügen</span>
+                </button>
+
+              </div>
+            </section>
+
+        </main>
+    </div>
+</div>
+
+</body>
+</html>
