@@ -1,0 +1,540 @@
+/* ---------------------------------------------
+   Design tokens
+--------------------------------------------- */
+:root {
+  /* Palette — ledger paper, pine ink, brass accent */
+  --paper: #EEF3EC;
+  --sheet: #FBFBF7;
+  --ink: #1B2A20;
+  --ink-soft: #55665A;
+  --ink-faint: #8A9A8D;
+  --line: #CBD8C6;
+  --line-strong: #A9BBA3;
+
+  --accent: #B98A2E;       /* brass — budgets, focus, signature */
+  --accent-soft: #E6D5AC;
+  --positive: #2F6E4F;      /* forest green */
+  --positive-soft: #DCEAE0;
+  --negative: #A6432D;      /* brick */
+  --negative-soft: #F1DDD6;
+  --warn: #B98A2E;
+
+  --font-display: "Fraunces", serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --radius: 6px;
+  --sidebar-w: 220px;
+}
+
+/* ---------------------------------------------
+   Reset & base
+--------------------------------------------- */
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  margin: 0;
+  color: var(--ink);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+/* ---------------------------------------------
+   App shell
+--------------------------------------------- */
+.app {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  min-height: 100vh;
+}
+
+/* ---------------------------------------------
+   Sidebar
+--------------------------------------------- */
+.sidebar {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 40px;
+}
+
+.brand__mark {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--accent-soft);
+}
+
+.brand__name {
+  font-family: var(--font-display);
+  font-size: 18px;
+  letter-spacing: 0.01em;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.nav__item {
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  color: rgba(238, 243, 236, 0.7);
+  font-size: 14px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.nav__item:hover {
+  background: rgba(238, 243, 236, 0.08);
+  color: var(--paper);
+}
+
+.nav__item--active {
+  background: rgba(185, 138, 46, 0.18);
+  color: var(--accent-soft);
+  font-weight: 500;
+}
+
+.sidebar__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(238, 243, 236, 0.15);
+  font-family: var(--font-mono);
+}
+
+.sidebar__period {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(238, 243, 236, 0.5);
+}
+
+.sidebar__month {
+  font-size: 13px;
+  color: var(--paper);
+}
+
+/* ---------------------------------------------
+   Main / topbar
+--------------------------------------------- */
+.main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 40px;
+  border-bottom: 1px solid var(--line);
+}
+
+.topbar__month {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.month-nav {
+  border: 1px solid var(--line-strong);
+  background: var(--sheet);
+  border-radius: var(--radius);
+  width: 26px;
+  height: 26px;
+  color: var(--ink-soft);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.month-nav:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn {
+  border: none;
+  border-radius: var(--radius);
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.btn--primary {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.btn--primary:hover {
+  background: #2A3D2F;
+}
+
+/* ---------------------------------------------
+   Content / ledger-rule background
+--------------------------------------------- */
+.content {
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 35px,
+    var(--line) 35px,
+    var(--line) 36px
+  );
+}
+
+/* ---------------------------------------------
+   Hero balance
+--------------------------------------------- */
+.hero {
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 32px 36px;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+}
+
+.hero__amount {
+  font-size: 52px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.hero__currency {
+  font-size: 28px;
+  color: var(--ink-faint);
+  margin-right: 4px;
+}
+
+.hero__decimals {
+  font-size: 28px;
+  color: var(--ink-faint);
+}
+
+.hero__delta {
+  margin: 8px 0 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.hero__delta--positive { color: var(--positive); }
+.hero__delta--negative { color: var(--negative); }
+
+/* ---------------------------------------------
+   Section head
+--------------------------------------------- */
+.section__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.section__head h2 {
+  font-size: 19px;
+}
+
+.section__link {
+  font-size: 13px;
+  color: var(--ink-soft);
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.section__link:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* ---------------------------------------------
+   Budget cards
+--------------------------------------------- */
+.budget-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.budget-card {
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+}
+
+.budget-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.budget-card__label {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.budget-card__figures {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.budget-card__track {
+  height: 6px;
+  background: var(--paper);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.budget-card__fill {
+  height: 100%;
+  background: var(--positive);
+  border-radius: 3px;
+}
+
+.budget-card__fill--warn { background: var(--warn); }
+.budget-card__fill--over { background: var(--negative); }
+
+.budget-card__note {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+
+.budget-card__note--warn { color: var(--warn); }
+.budget-card__note--over { color: var(--negative); }
+
+/* ---------------------------------------------
+   Page head (non-monthly pages)
+--------------------------------------------- */
+.page-head {
+  margin-bottom: 4px;
+}
+
+.page-head h1 {
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+
+.page-head p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+/* ---------------------------------------------
+   Account cards
+--------------------------------------------- */
+.account-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.account-card {
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.account-card__institute {
+  margin: 0;
+}
+
+.account-card__name {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.account-card__type {
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-top: -6px;
+}
+
+.account-card__balance {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 24px;
+  margin-top: 6px;
+}
+
+.account-card__balance--positive { color: var(--positive); }
+.account-card__balance--negative { color: var(--negative); }
+
+.account-card--add {
+  border: 1px dashed var(--line-strong);
+  background: transparent;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--ink-soft);
+  cursor: pointer;
+  min-height: 108px;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.account-card--add:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.account-card--add span {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ---------------------------------------------
+   Ledger table
+--------------------------------------------- */
+.ledger {
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead th {
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+  font-weight: 400;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+tbody td {
+  padding: 13px 20px;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:hover {
+  background: var(--paper);
+}
+
+.align-right { text-align: right; }
+
+.amount {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.amount--positive { color: var(--positive); }
+.amount--negative { color: var(--negative); }
+
+.tag {
+  display: inline-block;
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  background: var(--positive-soft);
+  color: var(--positive);
+}
+
+/* ---------------------------------------------
+   Responsive
+--------------------------------------------- */
+@media (max-width: 860px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    flex-direction: row;
+    align-items: center;
+    padding: 14px 20px;
+  }
+
+  .brand { margin-bottom: 0; }
+
+  .nav {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .sidebar__footer { display: none; }
+
+  .topbar, .content {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .hero__amount { font-size: 40px; }
+}
