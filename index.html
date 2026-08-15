@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Finanzübersicht</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finanzübersicht</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
   <div class="app">
@@ -53,9 +57,9 @@
         <section class="hero" aria-labelledby="hero-heading">
           <p class="eyebrow">Gesamtsaldo</p>
           <h1 id="hero-heading" class="hero__amount">
-            <span class="hero__currency">€</span>4.812<span class="hero__decimals">,40</span>
+            <span class="hero__currency">€</span><span id="overview-total-balance">0,00</span>
           </h1>
-          <p class="hero__delta hero__delta--positive">+312,50 € gegenüber Juli</p>
+          <p id="overview-difference" class="hero__delta hero__delta--positive">0,00 € gegenüber dem Vormonat</p>
         </section>
 
         <!-- Budget cards -->
@@ -160,5 +164,57 @@
     </div>
   </div>
 
+  <script>
+    const BANK_ACCOUNTS_STORAGE_KEY = 'personal_finance_bank_accounts';
+    const overview_total_balance = document.getElementById('overview-total-balance');
+    const overview_difference = document.getElementById('overview-difference');
+
+    function getSavedBankAccounts() {
+      try {
+        const raw = localStorage.getItem(BANK_ACCOUNTS_STORAGE_KEY);
+        if (!raw) return [];
+
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+
+        return parsed.map((account) => ({
+          balance: Number.parseFloat(account.balance) || 0,
+        }));
+      } catch (error) {
+        console.warn('Fehler beim Laden der Konten für die Übersicht:', error);
+        return [];
+      }
+    }
+
+    function updateOverviewSummary() {
+      const accounts = getSavedBankAccounts();
+      const total = accounts.reduce((sum, account) => sum + account.balance, 0);
+      const previous_month_total = 0;
+      const difference = total - previous_month_total;
+
+      if (overview_total_balance) {
+        overview_total_balance.textContent = new Intl.NumberFormat('de-DE', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(total);
+      }
+
+      if (overview_difference) {
+        const formatted_difference = new Intl.NumberFormat('de-DE', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(Math.abs(difference));
+
+        const sign = difference >= 0 ? '+' : '−';
+        overview_difference.textContent = `${sign}${formatted_difference} € gegenüber dem Vormonat`;
+        overview_difference.classList.toggle('hero__delta--negative', difference < 0);
+        overview_difference.classList.toggle('hero__delta--positive', difference >= 0);
+      }
+    }
+
+    updateOverviewSummary();
+  </script>
+
 </body>
+
 </html>
