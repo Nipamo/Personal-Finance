@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budgets – Finanzübersicht</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+
+    <div class="app">
+
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="brand__mark">§</span>
+                <span class="brand__name">Hauptbuch</span>
+            </div>
+
+            <nav class="nav" aria-label="Hauptnavigation">
+                <a class="nav__item" href="../index.html">
+                    <span class="nav__label">Übersicht</span>
+                </a>
+                <a class="nav__item" href="bank_accounts.html">
+                    <span class="nav__label">Konten</span>
+                </a>
+                <a class="nav__item nav__item--active" href="budgets.html">
+                    <span class="nav__label">Budgets</span>
+                </a>
+                <a class="nav__item" href="transactions.html">
+                    <span class="nav__label">Transaktionen</span>
+                </a>
+            </nav>
+
+            <div class="sidebar__footer">
+                <span class="sidebar__period">Berichtszeitraum</span>
+                <span class="sidebar__month">August 2026</span>
+            </div>
+        </aside>
+
+        <div class="main">
+
+            <header class="topbar">
+                <div class="topbar__month">
+                    <span>Budgets</span>
+                </div>
+                <button class="btn btn--primary fn-add_budget">+ Budget hinzufügen</button>
+            </header>
+
+            <main class="content">
+
+                <section class="hero" aria-labelledby="budgets-heading">
+                    <p class="eyebrow">Gesamtbudget</p>
+                    <h2 id="budgets-heading" class="hero__amount">
+                        <span class="hero__currency">€</span><span id="budget-total-amount">0,00</span>
+                    </h2>
+                    <p id="budget-total-summary" class="hero__delta hero__delta--positive">0 Budgets angelegt</p>
+                </section>
+
+                <section aria-labelledby="budget-list-heading" class="section">
+                    <div class="section__head">
+                        <h2 id="budget-list-heading">Budget-Übersicht</h2>
+                    </div>
+
+                    <div id="budget-list" class="budget-grid"></div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <div id="budget-modal" class="account-modal" hidden>
+        <div class="account-modal__backdrop" data-close="budget-modal"></div>
+        <div class="account-modal__panel" role="dialog" aria-modal="true" aria-labelledby="budget-modal-title">
+            <div class="account-modal__header">
+                <div>
+                    <p class="eyebrow">Neues Budget</p>
+                    <h2 id="budget-modal-title">Budget erstellen</h2>
+                </div>
+                <button class="account-modal__close" type="button" aria-label="Budget-Fenster schließen"
+                    data-close="budget-modal">×</button>
+            </div>
+
+            <form id="budget-form" class="account-modal__form">
+                <label class="field">
+                    <span class="field__label">Budgetname</span>
+                    <input type="text" name="name" placeholder="z. B. Lebensmittel" required>
+                </label>
+
+                <label class="field">
+                    <span class="field__label">Budgettyp</span>
+                    <select id="budget-type-select" name="type" required>
+                        <option value="fixed">Festes Budget</option>
+                        <option value="incremental">Inkrementell (Sparkonto)</option>
+                    </select>
+                </label>
+
+                <label class="field">
+                    <span class="field__label">Zugehöriges Konto</span>
+                    <select id="budget-account-select" name="account" required></select>
+                </label>
+
+                <div id="fixed-budget-fields">
+                    <label class="field">
+                        <span class="field__label">Budgetbetrag</span>
+                        <input type="number" name="amount" step="0.01" min="0" placeholder="0,00">
+                    </label>
+                </div>
+
+                <div id="incremental-budget-fields" hidden>
+                    <label class="field">
+                        <span class="field__label">Zielbetrag</span>
+                        <input type="number" name="targetAmount" step="0.01" min="0" placeholder="0,00">
+                    </label>
+
+                    <label class="field">
+                        <span class="field__label">Aktueller Stand</span>
+                        <input type="number" name="currentAmount" step="0.01" min="0" placeholder="0,00">
+                    </label>
+                </div>
+
+                <label class="field field--checkbox">
+                    <span class="field__label">Favorit</span>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" name="favorite" value="true">
+                        <span>In der Übersicht anzeigen</span>
+                    </label>
+                </label>
+
+                <div class="account-modal__actions">
+                    <button class="btn btn--secondary" type="button" data-close="budget-modal">Abbrechen</button>
+                    <button class="btn btn--primary" type="submit">Budget speichern</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="quick-transaction-modal" class="account-modal" hidden>
+        <div class="account-modal__backdrop" data-close="quick-transaction-modal"></div>
+        <div class="account-modal__panel" role="dialog" aria-modal="true"
+            aria-labelledby="quick-transaction-modal-title">
+            <div class="account-modal__header">
+                <div>
+                    <p class="eyebrow">Neue Transaktion</p>
+                    <h2 id="quick-transaction-modal-title">Buchung erfassen</h2>
+                </div>
+                <button class="account-modal__close" type="button" aria-label="Fenster schließen"
+                    data-close="quick-transaction-modal">×</button>
+            </div>
+
+            <form id="quick-transaction-form" class="account-modal__form">
+                <label class="field">
+                    <span class="field__label">Beschreibung</span>
+                    <input type="text" name="description" placeholder="z. B. Supermarkt" required>
+                </label>
+
+                <label class="field">
+                    <span class="field__label">Betroffene Budget</span>
+                    <select id="quick-transaction-budget-select" name="budget" required></select>
+                </label>
+
+                <label class="field">
+                    <span class="field__label">Datum</span>
+                    <input type="date" name="date" required>
+                </label>
+
+                <label class="field">
+                    <span class="field__label">Betrag</span>
+                    <input type="number" name="amount" step="0.01" min="0.01" placeholder="0,00" required>
+                </label>
+
+                <label class="field">
+                    <span class="field__label">Typ</span>
+                    <select name="type" required>
+                        <option value="">Bitte wählen</option>
+                        <option value="expense">Ausgabe</option>
+                        <option value="income">Einnahme</option>
+                    </select>
+                </label>
+
+                <div class="account-modal__actions">
+                    <button class="btn btn--secondary" type="button"
+                        data-close="quick-transaction-modal">Abbrechen</button>
+                    <button class="btn btn--primary" type="submit">Transaktion speichern</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const BUDGET_STORAGE_KEY = 'personal_finance_budgets';
+        const ACCOUNTS_STORAGE_KEY = 'personal_finance_bank_accounts';
+        const budget_list = document.getElementById('budget-list');
+        const budget_total_amount = document.getElementById('budget-total-amount');
+        const budget_total_summary = document.getElementById('budget-total-summary');
+        const budget_modal = document.getElementById('budget-modal');
+        const budget_form = document.getElementById('budget-form');
+        const account_select = document.getElementById('budget-account-select');
+        const budget_type_select = document.getElementById('budget-type-select');
+        const fixed_budget_fields = document.getElementById('fixed-budget-fields');
+        const incremental_budget_fields = document.getElementById('incremental-budget-fields');
+        const quick_transaction_modal = document.getElementById('quick-transaction-modal');
+        const quick_transaction_form = document.getElementById('quick-transaction-form');
+        const quick_transaction_budget_select = document.getElementById('quick-transaction-budget-select');
+
+        function getSavedAccounts() {
+            try {
+                const raw = localStorage.getItem(ACCOUNTS_STORAGE_KEY);
+                if (!raw) return [];
+
+                const parsed = JSON.parse(raw);
+                if (!Array.isArray(parsed)) return [];
+
+                return parsed.map((account) => ({
+                    id: String(account.id || `${account.institute}-${account.name}`),
+                    institute: String(account.institute || 'Institut'),
+                    name: String(account.name || 'Konto'),
+                    type: String(account.type || 'Konto'),
+                    balance: Number.parseFloat(account.balance) || 0,
+                    accountKey: `${String(account.institute || 'Institut')} | ${String(account.name || 'Konto')}`,
+                }));
+            } catch (error) {
+                console.warn('Fehler beim Laden der Konten:', error);
+                return [];
+            }
+        }
+
+        function getSavedBudgets() {
+            try {
+                const raw = localStorage.getItem(BUDGET_STORAGE_KEY);
+                if (!raw) return [];
+
+                const parsed = JSON.parse(raw);
+                if (!Array.isArray(parsed)) return [];
+
+                return parsed.map((budget) => {
+                    const type = budget.type === 'incremental' ? 'incremental' : 'fixed';
+                    const targetAmount = Number.parseFloat(budget.targetAmount) || Number.parseFloat(budget.amount) || 0;
+                    const currentAmount = Number.parseFloat(budget.currentAmount) || Number.parseFloat(budget.used) || 0;
+
+                    return {
+                        id: String(budget.id || (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`)),
+                        name: String(budget.name || 'Budget'),
+                        account: String(budget.account || budget.accountKey || 'Unbekannt'),
+                        accountKey: String(budget.accountKey || budget.account || 'Unbekannt'),
+                        type,
+                        amount: targetAmount,
+                        targetAmount,
+                        monthlyAmount: Number.parseFloat(budget.monthlyAmount) || 0,
+                        used: currentAmount,
+                        currentAmount,
+                        favorite: Boolean(budget.favorite),
+                    };
+                });
+            } catch (error) {
+                console.warn('Fehler beim Laden der Budgets:', error);
+                return [];
+            }
+        }
+
+        function createBudgetEntry({ name, accountKey, amount, accountLabel, type = 'fixed', targetAmount, currentAmount, favorite = false }) {
+            const isIncremental = type === 'incremental';
+
+            return {
+                id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
+                name,
+                account: accountLabel,
+                accountKey,
+                type: isIncremental ? 'incremental' : 'fixed',
+                amount: isIncremental ? (targetAmount || 0) : (amount || 0),
+                targetAmount: isIncremental ? (targetAmount || 0) : (amount || 0),
+                monthlyAmount: 0,
+                used: isIncremental ? (currentAmount || 0) : 0,
+                currentAmount: isIncremental ? (currentAmount || 0) : 0,
+                favorite: Boolean(favorite),
+            };
+        }
+
+        function saveBudgets(budgets) {
+            localStorage.setItem(BUDGET_STORAGE_KEY, JSON.stringify(budgets));
+        }
+
+        function getSavedTransactions() {
+            try {
+                const raw = localStorage.getItem('personal_finance_transactions');
+                if (!raw) return [];
+
+                const parsed = JSON.parse(raw);
+                if (!Array.isArray(parsed)) return [];
+
+                return parsed;
+            } catch (error) {
+                console.warn('Fehler beim Laden der Transaktionen:', error);
+                return [];
+            }
+        }
+
+        function saveTransactions(transactions) {
+            localStorage.setItem('personal_finance_transactions', JSON.stringify(transactions));
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('de-DE', {
+                style: 'currency',
+                currency: 'EUR',
+            }).format(value);
+        }
+
+        function populateAccountSelect() {
+            const accounts = getSavedAccounts();
+            account_select.innerHTML = '';
+
+            if (!accounts.length) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'Bitte erst Konto anlegen';
+                account_select.appendChild(option);
+                account_select.disabled = true;
+                return;
+            }
+
+            account_select.disabled = false;
+            const empty_option = document.createElement('option');
+            empty_option.value = '';
+            empty_option.textContent = 'Bitte wählen';
+            account_select.appendChild(empty_option);
+
+            accounts.forEach((account) => {
+                const option = document.createElement('option');
+                option.value = account.accountKey;
+                option.textContent = `${account.institute} · ${account.name}`;
+                account_select.appendChild(option);
+            });
+        }
+
+        function renderBudgets() {
+            const budgets = getSavedBudgets();
+            budget_list.innerHTML = '';
+
+            if (!budgets.length) {
+                const empty_state = document.createElement('div');
+                empty_state.className = 'empty-state';
+                empty_state.innerHTML = '<p>Keine Budgets angelegt.</p>';
+                budget_list.appendChild(empty_state);
+            } else {
+                budgets.forEach((budget) => {
+                    const card = document.createElement('article');
+                    card.className = 'budget-card';
+
+                    const used = Number.isFinite(budget.used) ? budget.used : 0;
+                    const target = Number.isFinite(budget.targetAmount) && budget.targetAmount > 0 ? budget.targetAmount : Math.max(budget.amount, 0);
+                    const percentage = target > 0 ? Math.min((used / Math.max(target, 1)) * 100, 100) : 0;
+                    const remaining = target - used;
+                    const isIncremental = budget.type === 'incremental';
+                    const amountDescription = isIncremental
+                        ? (budget.targetAmount > 0 ? `${formatCurrency(used)} / ${formatCurrency(target)}` : `${formatCurrency(used)} gespart`)
+                        : `${formatCurrency(used)} / ${formatCurrency(target)}`;
+
+                    card.setAttribute('data-budget-id', budget.id);
+                    card.innerHTML = `
+            <div class="budget-card__head">
+              <div class="budget-card__title-wrap">
+                <span class="budget-card__label">${budget.name}</span>
+                <button class="budget-card__favorite" type="button" data-favorite-toggle="${budget.id}" aria-label="${budget.favorite ? 'Favorit entfernen' : 'Als Favorit markieren'}">${budget.favorite ? '★' : '☆'}</button>
+              </div>
+              <span class="budget-card__figures">${amountDescription}</span>
+            </div>
+            <div class="budget-card__track">
+              <div class="budget-card__fill ${remaining < 0 ? 'budget-card__fill--over' : ''}" style="width: ${percentage}%"></div>
+            </div>
+            <p class="budget-card__note ${remaining < 0 ? 'budget-card__note--over' : ''}">${budget.account} · ${isIncremental ? (budget.targetAmount > 0 ? `${remaining >= 0 ? `${formatCurrency(remaining)} bis Ziel` : `${formatCurrency(Math.abs(remaining))} über Ziel`}` : 'Ziel offen') : `${remaining >= 0 ? `${formatCurrency(remaining)} übrig` : `${formatCurrency(Math.abs(remaining))} über Budget`}`}</p>
+            <div class="budget-card__menu">
+              <button class="budget-card__mini" type="button" data-budget-action="edit" data-budget-id="${budget.id}">Bearbeiten</button>
+              <button class="budget-card__mini budget-card__mini--danger" type="button" data-budget-action="delete" data-budget-id="${budget.id}">Löschen</button>
+            </div>
+            <button class="budget-card__action" type="button" data-budget-id="${budget.id}">Transaktion hinzufügen</button>
+          `;
+
+                    budget_list.appendChild(card);
+                });
+            }
+
+            const total = budgets.reduce((sum, budget) => sum + (budget.targetAmount || budget.amount || 0), 0);
+            budget_total_amount.textContent = new Intl.NumberFormat('de-DE', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            }).format(total);
+
+            budget_total_summary.textContent = `${budgets.length} ${budgets.length === 1 ? 'Budget' : 'Budgets'} angelegt`;
+        }
+
+        function toggleBudgetTypeFields() {
+            const isIncremental = budget_type_select.value === 'incremental';
+            fixed_budget_fields.hidden = isIncremental;
+            incremental_budget_fields.hidden = !isIncremental;
+
+            if (isIncremental) {
+                const amountInput = budget_form.querySelector('input[name="amount"]');
+                if (amountInput) {
+                    amountInput.removeAttribute('required');
+                }
+            } else {
+                const amountInput = budget_form.querySelector('input[name="amount"]');
+                if (amountInput) {
+                    amountInput.setAttribute('required', 'required');
+                }
+            }
+        }
+
+        function populateQuickTransactionBudgetSelect(selectedBudgetId = null) {
+            const budgets = getSavedBudgets();
+            quick_transaction_budget_select.innerHTML = '';
+
+            if (!budgets.length) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'Bitte erst Budget anlegen';
+                quick_transaction_budget_select.appendChild(option);
+                quick_transaction_budget_select.disabled = true;
+                return;
+            }
+
+            quick_transaction_budget_select.disabled = false;
+            const empty_option = document.createElement('option');
+            empty_option.value = '';
+            empty_option.textContent = 'Bitte wählen';
+            quick_transaction_budget_select.appendChild(empty_option);
+
+            budgets.forEach((budget) => {
+                const option = document.createElement('option');
+                option.value = budget.id;
+                option.textContent = `${budget.name} · ${budget.account}`;
+                quick_transaction_budget_select.appendChild(option);
+            });
+
+            if (selectedBudgetId) {
+                quick_transaction_budget_select.value = selectedBudgetId;
+            }
+        }
+
+        function updateBudgetAndAccountBalances(budgetId, amount, type) {
+            const budgets = getSavedBudgets();
+            const accounts = getSavedAccounts();
+            const budgetIndex = budgets.findIndex((entry) => entry.id === budgetId);
+
+            if (budgetIndex === -1) {
+                return;
+            }
+
+            const budget = budgets[budgetIndex];
+            const nextUsed = type === 'expense' ? budget.used + amount : Math.max(budget.used - amount, 0);
+            budget.used = nextUsed;
+            budget.currentAmount = nextUsed;
+            budgets[budgetIndex] = budget;
+
+            const account = accounts.find((entry) => entry.accountKey === budget.accountKey || entry.key === budget.accountKey);
+            if (account) {
+                const currentBalance = Number.parseFloat(account.balance) || 0;
+                account.balance = type === 'expense' ? currentBalance - amount : currentBalance + amount;
+                const index = accounts.findIndex((entry) => entry.accountKey === account.accountKey || entry.key === account.key);
+                if (index >= 0) {
+                    accounts[index] = account;
+                    localStorage.setItem(ACCOUNTS_STORAGE_KEY, JSON.stringify(accounts));
+                }
+            }
+
+            saveBudgets(budgets);
+        }
+
+        function toggleFavoriteBudget(budgetId) {
+            const budgets = getSavedBudgets();
+            const index = budgets.findIndex((budget) => budget.id === budgetId);
+
+            if (index === -1) {
+                return;
+            }
+
+            budgets[index].favorite = !budgets[index].favorite;
+            saveBudgets(budgets);
+            renderBudgets();
+        }
+
+        function openBudgetModalForEdit(budgetId) {
+            const budgets = getSavedBudgets();
+            const budget = budgets.find((item) => item.id === budgetId);
+
+            if (!budget) {
+                return;
+            }
+
+            populateAccountSelect();
+            budget_form.dataset.editingBudgetId = budget.id;
+            budget_form.querySelector('[name="name"]').value = budget.name || '';
+            budget_form.querySelector('[name="account"]').value = budget.accountKey || '';
+            budget_form.querySelector('[name="type"]').value = budget.type || 'fixed';
+            budget_type_select.value = budget.type || 'fixed';
+            toggleBudgetTypeFields();
+
+            if (budget.type === 'incremental') {
+                budget_form.querySelector('[name="targetAmount"]').value = budget.targetAmount || '';
+                budget_form.querySelector('[name="currentAmount"]').value = budget.currentAmount || '';
+            } else {
+                budget_form.querySelector('[name="amount"]').value = budget.amount || '';
+            }
+
+            budget_form.querySelector('[name="favorite"]').checked = Boolean(budget.favorite);
+
+            const modal_title = document.getElementById('budget-modal-title');
+            if (modal_title) modal_title.textContent = 'Budget bearbeiten';
+
+            budget_modal.hidden = false;
+        }
+
+        function deleteBudget(budgetId) {
+            const budgets = getSavedBudgets();
+            const next_budgets = budgets.filter((budget) => budget.id !== budgetId);
+            saveBudgets(next_budgets);
+
+            const transactions = getSavedTransactions();
+            const next_transactions = transactions.filter((transaction) => transaction.budgetId !== budgetId);
+            saveTransactions(next_transactions);
+
+            renderBudgets();
+        }
+
+        function openTransactionForBudget(budgetId) {
+            if (!budgetId) {
+                return;
+            }
+
+            const budgets = getSavedBudgets();
+            const selectedBudget = budgets.find((entry) => entry.id === budgetId);
+
+            populateQuickTransactionBudgetSelect(budgetId);
+            quick_transaction_modal.hidden = false;
+            quick_transaction_form.reset();
+            quick_transaction_budget_select.value = budgetId;
+            quick_transaction_form.elements.date.value = new Date().toISOString().split('T')[0];
+
+            const typeField = quick_transaction_form.querySelector('select[name="type"]');
+            if (typeField) {
+                typeField.value = selectedBudget && selectedBudget.type === 'incremental' ? 'income' : 'expense';
+            }
+
+            quick_transaction_form.elements.description.focus();
+        }
+
+        document.querySelectorAll('.fn-add_budget').forEach((button) => {
+            button.addEventListener('click', () => {
+                populateAccountSelect();
+                budget_type_select.value = 'fixed';
+                toggleBudgetTypeFields();
+                budget_modal.hidden = false;
+                if (account_select && !account_select.disabled) {
+                    account_select.focus();
+                }
+            });
+        });
+
+        quick_transaction_form.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const form_data = new FormData(quick_transaction_form);
+            const description = (form_data.get('description') || '').toString().trim();
+            const budgetId = (form_data.get('budget') || '').toString().trim();
+            const amount = Number.parseFloat((form_data.get('amount') || '0').toString()) || 0;
+            const type = (form_data.get('type') || '').toString().trim();
+            const selectedDate = (form_data.get('date') || '').toString().trim() || new Date().toISOString().split('T')[0];
+
+            if (!description || !budgetId || amount <= 0 || !type || !selectedDate) {
+                return;
+            }
+
+            const budgets = getSavedBudgets();
+            const budget = budgets.find((entry) => entry.id === budgetId);
+            if (!budget) {
+                return;
+            }
+
+            const transactions = getSavedTransactions();
+            transactions.push({
+                id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
+                description,
+                budget: budget.name,
+                budgetId,
+                budgetKey: budget.accountKey,
+                amount,
+                type,
+                createdAt: new Date(`${selectedDate}T12:00:00`).toISOString(),
+            });
+
+            saveTransactions(transactions);
+            updateBudgetAndAccountBalances(budgetId, amount, type);
+            renderBudgets();
+            quick_transaction_form.reset();
+            quick_transaction_modal.hidden = true;
+        });
+
+        document.querySelectorAll('[data-close="quick-transaction-modal"]').forEach((element) => {
+            element.addEventListener('click', () => {
+                quick_transaction_modal.hidden = true;
+                quick_transaction_form.reset();
+            });
+        });
+
+        budget_list.addEventListener('click', (event) => {
+            const favoriteToggle = event.target.closest('[data-favorite-toggle]');
+            if (favoriteToggle) {
+                event.stopPropagation();
+                toggleFavoriteBudget(favoriteToggle.dataset.favoriteToggle);
+                return;
+            }
+
+            const edit_button = event.target.closest('[data-budget-action="edit"]');
+            if (edit_button) {
+                event.stopPropagation();
+                openBudgetModalForEdit(edit_button.dataset.budgetId);
+                return;
+            }
+
+            const delete_button = event.target.closest('[data-budget-action="delete"]');
+            if (delete_button) {
+                event.stopPropagation();
+                deleteBudget(delete_button.dataset.budgetId);
+                return;
+            }
+
+            const trigger = event.target.closest('[data-budget-id]');
+            if (!trigger) {
+                return;
+            }
+
+            const budgetId = trigger.dataset.budgetId;
+            if (budgetId) {
+                event.stopPropagation();
+                openTransactionForBudget(budgetId);
+            }
+        });
+
+        budget_type_select.addEventListener('change', toggleBudgetTypeFields);
+
+        document.querySelectorAll('[data-close="budget-modal"]').forEach((element) => {
+            element.addEventListener('click', () => {
+                budget_modal.hidden = true;
+                budget_form.reset();
+                delete budget_form.dataset.editingBudgetId;
+                const modal_title = document.getElementById('budget-modal-title');
+                if (modal_title) modal_title.textContent = 'Budget erstellen';
+                toggleBudgetTypeFields();
+            });
+        });
+
+        budget_form.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const form_data = new FormData(budget_form);
+            const name = (form_data.get('name') || '').toString().trim();
+            const accountKey = (form_data.get('account') || '').toString().trim();
+            const budgetType = (form_data.get('type') || 'fixed').toString().trim();
+            const favorite = form_data.get('favorite') === 'true' || form_data.get('favorite') === 'on';
+            const editing_id = budget_form.dataset.editingBudgetId;
+
+            const accounts = getSavedAccounts();
+            const account = accounts.find((entry) => entry.accountKey === accountKey);
+            const budgets = getSavedBudgets();
+
+            let next_budget;
+
+            if (budgetType === 'incremental') {
+                const targetAmount = Number.parseFloat((form_data.get('targetAmount') || '0').toString()) || 0;
+                const currentAmount = Number.parseFloat((form_data.get('currentAmount') || '0').toString()) || 0;
+
+                if (!name || !accountKey || currentAmount < 0 || targetAmount < 0) {
+                    return;
+                }
+
+                next_budget = createBudgetEntry({
+                    name,
+                    accountKey,
+                    targetAmount,
+                    currentAmount,
+                    accountLabel: account ? `${account.institute} | ${account.name}` : accountKey,
+                    type: 'incremental',
+                    favorite,
+                });
+            } else {
+                const amount = Number.parseFloat((form_data.get('amount') || '0').toString()) || 0;
+
+                if (!name || !accountKey || amount <= 0) {
+                    return;
+                }
+
+                next_budget = createBudgetEntry({
+                    name,
+                    accountKey,
+                    amount,
+                    accountLabel: account ? `${account.institute} | ${account.name}` : accountKey,
+                    type: 'fixed',
+                    favorite,
+                });
+            }
+
+            if (editing_id) {
+                const index = budgets.findIndex((budget) => budget.id === editing_id);
+                if (index >= 0) {
+                    next_budget.id = editing_id;
+                    budgets[index] = next_budget;
+                }
+            } else {
+                budgets.push(next_budget);
+            }
+
+            saveBudgets(budgets);
+            renderBudgets();
+            budget_form.reset();
+            delete budget_form.dataset.editingBudgetId;
+            const modal_title = document.getElementById('budget-modal-title');
+            if (modal_title) modal_title.textContent = 'Budget erstellen';
+            toggleBudgetTypeFields();
+            budget_modal.hidden = true;
+        });
+
+        renderBudgets();
+        populateAccountSelect();
+        toggleBudgetTypeFields();
+    </script>
+</body>
+
+</html>

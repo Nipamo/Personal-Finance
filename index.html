@@ -31,6 +31,12 @@
         <a class="nav__item" href="sidebar/bank_accounts.html">
           <span class="nav__label">Konten</span>
         </a>
+        <a class="nav__item" href="sidebar/budgets.html">
+          <span class="nav__label">Budgets</span>
+        </a>
+        <a class="nav__item" href="sidebar/transactions.html">
+          <span class="nav__label">Transaktionen</span>
+        </a>
       </nav>
 
       <div class="sidebar__footer">
@@ -65,53 +71,18 @@
         <!-- Budget cards -->
         <section aria-labelledby="budgets-heading" class="section">
           <div class="section__head">
-            <h2 id="budgets-heading">Budgets diesen Monat</h2>
-            <a class="section__link" href="#">Alle anzeigen</a>
+            <h2 id="budgets-heading">Favorisierte Budgets</h2>
+            <a class="section__link" href="sidebar/budgets.html">Alle anzeigen</a>
           </div>
 
-          <div class="budget-grid">
-
-            <article class="budget-card">
-              <div class="budget-card__head">
-                <span class="budget-card__label">Lebensmittel</span>
-                <span class="budget-card__figures">320 / 400 €</span>
-              </div>
-              <div class="budget-card__track">
-                <div class="budget-card__fill" style="width: 80%"></div>
-              </div>
-              <p class="budget-card__note">80 € übrig</p>
-            </article>
-
-            <article class="budget-card">
-              <div class="budget-card__head">
-                <span class="budget-card__label">Freizeit</span>
-                <span class="budget-card__figures">145 / 150 €</span>
-              </div>
-              <div class="budget-card__track">
-                <div class="budget-card__fill budget-card__fill--warn" style="width: 97%"></div>
-              </div>
-              <p class="budget-card__note budget-card__note--warn">5 € übrig</p>
-            </article>
-
-            <article class="budget-card">
-              <div class="budget-card__head">
-                <span class="budget-card__label">Transport</span>
-                <span class="budget-card__figures">210 / 180 €</span>
-              </div>
-              <div class="budget-card__track">
-                <div class="budget-card__fill budget-card__fill--over" style="width: 100%"></div>
-              </div>
-              <p class="budget-card__note budget-card__note--over">30 € über Budget</p>
-            </article>
-
-          </div>
+          <div id="favorite-budgets-grid" class="budget-grid"></div>
         </section>
 
         <!-- Ledger table -->
         <section aria-labelledby="ledger-heading" class="section">
           <div class="section__head">
             <h2 id="ledger-heading">Letzte Transaktionen</h2>
-            <a class="section__link" href="#">Alle anzeigen</a>
+            <a class="btn btn--secondary section__link" href="sidebar/transactions.html">Weitere Transaktionen</a>
           </div>
 
           <div class="ledger">
@@ -124,38 +95,7 @@
                   <th scope="col" class="align-right">Betrag</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>08.08.</td>
-                  <td>Supermarkt Nord</td>
-                  <td><span class="tag">Lebensmittel</span></td>
-                  <td class="align-right amount amount--negative">−48,20 €</td>
-                </tr>
-                <tr>
-                  <td>07.08.</td>
-                  <td>Gehalt August</td>
-                  <td><span class="tag">Einkommen</span></td>
-                  <td class="align-right amount amount--positive">+2.850,00 €</td>
-                </tr>
-                <tr>
-                  <td>05.08.</td>
-                  <td>Deutsche Bahn</td>
-                  <td><span class="tag">Transport</span></td>
-                  <td class="align-right amount amount--negative">−64,90 €</td>
-                </tr>
-                <tr>
-                  <td>03.08.</td>
-                  <td>Kino</td>
-                  <td><span class="tag">Freizeit</span></td>
-                  <td class="align-right amount amount--negative">−22,00 €</td>
-                </tr>
-                <tr>
-                  <td>01.08.</td>
-                  <td>Miete</td>
-                  <td><span class="tag">Wohnen</span></td>
-                  <td class="align-right amount amount--negative">−890,00 €</td>
-                </tr>
-              </tbody>
+              <tbody id="recent-transactions-body"></tbody>
             </table>
           </div>
         </section>
@@ -166,8 +106,12 @@
 
   <script>
     const BANK_ACCOUNTS_STORAGE_KEY = 'personal_finance_bank_accounts';
+    const TRANSACTIONS_STORAGE_KEY = 'personal_finance_transactions';
+    const BUDGETS_STORAGE_KEY = 'personal_finance_budgets';
     const overview_total_balance = document.getElementById('overview-total-balance');
     const overview_difference = document.getElementById('overview-difference');
+    const recent_transactions_body = document.getElementById('recent-transactions-body');
+    const favorite_budgets_grid = document.getElementById('favorite-budgets-grid');
 
     function getSavedBankAccounts() {
       try {
@@ -184,6 +128,156 @@
         console.warn('Fehler beim Laden der Konten für die Übersicht:', error);
         return [];
       }
+    }
+
+    function getSavedTransactions() {
+      try {
+        const raw = localStorage.getItem(TRANSACTIONS_STORAGE_KEY);
+        if (!raw) return [];
+
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+
+        return parsed.map((transaction) => ({
+          id: String(transaction.id || `${Date.now()}-${Math.random()}`),
+          description: String(transaction.description || 'Transaktion'),
+          budget: String(transaction.budget || 'Allgemein'),
+          amount: Number.parseFloat(transaction.amount) || 0,
+          type: String(transaction.type || 'expense'),
+          createdAt: String(transaction.createdAt || new Date().toISOString()),
+        }));
+      } catch (error) {
+        console.warn('Fehler beim Laden der Transaktionen für die Übersicht:', error);
+        return [];
+      }
+    }
+
+    function getSavedBudgets() {
+      try {
+        const raw = localStorage.getItem(BUDGETS_STORAGE_KEY);
+        if (!raw) return [];
+
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+
+        return parsed.map((budget) => ({
+          id: String(budget.id || `${Date.now()}-${Math.random()}`),
+          name: String(budget.name || 'Budget'),
+          account: String(budget.account || budget.accountKey || 'Unbekannt'),
+          accountKey: String(budget.accountKey || budget.account || 'Unbekannt'),
+          type: budget.type === 'incremental' ? 'incremental' : 'fixed',
+          targetAmount: Number.parseFloat(budget.targetAmount) || Number.parseFloat(budget.amount) || 0,
+          amount: Number.parseFloat(budget.amount) || Number.parseFloat(budget.targetAmount) || 0,
+          used: Number.parseFloat(budget.used) || Number.parseFloat(budget.currentAmount) || 0,
+          favorite: Boolean(budget.favorite),
+        }));
+      } catch (error) {
+        console.warn('Fehler beim Laden der Budgets für die Übersicht:', error);
+        return [];
+      }
+    }
+
+    function formatCurrency(value) {
+      return new Intl.NumberFormat('de-DE', {
+        style: 'currency',
+        currency: 'EUR',
+      }).format(value);
+    }
+
+    function formatDate(value) {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) {
+        return '—';
+      }
+
+      return new Intl.DateTimeFormat('de-DE', {
+        day: '2-digit',
+        month: '2-digit',
+      }).format(date);
+    }
+
+    function renderRecentTransactions() {
+      if (!recent_transactions_body) {
+        return;
+      }
+
+      const transactions = [...getSavedTransactions()]
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 5);
+
+      recent_transactions_body.innerHTML = '';
+
+      if (!transactions.length) {
+        const row = document.createElement('tr');
+        row.innerHTML = '<td colspan="4">Keine Transaktionen vorhanden.</td>';
+        recent_transactions_body.appendChild(row);
+        return;
+      }
+
+      transactions.forEach((transaction) => {
+        const row = document.createElement('tr');
+        const amount_class = transaction.type === 'income' ? 'amount amount--positive' : 'amount amount--negative';
+        const sign = transaction.type === 'income' ? '+' : '−';
+
+        row.innerHTML = `
+          <td>${formatDate(transaction.createdAt)}</td>
+          <td>${transaction.description}</td>
+          <td><span class="tag">${transaction.budget}</span></td>
+          <td class="align-right ${amount_class}">${sign}${formatCurrency(Math.abs(transaction.amount))}</td>
+        `;
+
+        recent_transactions_body.appendChild(row);
+      });
+    }
+
+    function renderFavoriteBudgets() {
+      if (!favorite_budgets_grid) {
+        return;
+      }
+
+      const budgets = getSavedBudgets().filter((budget) => budget.favorite);
+      favorite_budgets_grid.innerHTML = '';
+
+      if (!budgets.length) {
+        const empty_state = document.createElement('div');
+        empty_state.className = 'empty-state';
+        empty_state.innerHTML = '<p>Keine favorisierten Budgets ausgewählt.</p>';
+        favorite_budgets_grid.appendChild(empty_state);
+        return;
+      }
+
+      budgets.forEach((budget) => {
+        const card = document.createElement('article');
+        card.className = 'budget-card';
+
+        const used = Number.isFinite(budget.used) ? budget.used : 0;
+        const target = Number.isFinite(budget.targetAmount) && budget.targetAmount > 0 ? budget.targetAmount : Math.max(budget.amount, 0);
+        const percentage = target > 0 ? Math.min((used / Math.max(target, 1)) * 100, 100) : 0;
+        const remaining = target - used;
+        const isIncremental = budget.type === 'incremental';
+        const amountDescription = isIncremental
+          ? (budget.targetAmount > 0 ? `${formatCurrency(used)} / ${formatCurrency(target)}` : `${formatCurrency(used)} gespart`)
+          : `${formatCurrency(used)} / ${formatCurrency(target)}`;
+
+        const noteText = isIncremental
+          ? (budget.targetAmount > 0
+            ? (remaining >= 0 ? `${formatCurrency(remaining)} bis Ziel` : `${formatCurrency(Math.abs(remaining))} über Ziel`)
+            : 'Ziel offen')
+          : (remaining >= 0 ? `${formatCurrency(remaining)} übrig` : `${formatCurrency(Math.abs(remaining))} über Budget`);
+
+        card.innerHTML = `
+          <div class="budget-card__head">
+            <span class="budget-card__label">${budget.name}</span>
+            <span class="budget-card__figures">${amountDescription}</span>
+          </div>
+          <div class="budget-card__track">
+            <div class="budget-card__fill ${remaining < 0 ? 'budget-card__fill--over' : ''}" style="width: ${percentage}%"></div>
+          </div>
+          <p class="budget-card__note ${remaining < 0 ? 'budget-card__note--over' : ''}">${budget.account} · ${noteText}</p>
+        `;
+
+        favorite_budgets_grid.appendChild(card);
+      });
     }
 
     function updateOverviewSummary() {
@@ -213,6 +307,8 @@
     }
 
     updateOverviewSummary();
+    renderRecentTransactions();
+    renderFavoriteBudgets();
   </script>
 
 </body>
