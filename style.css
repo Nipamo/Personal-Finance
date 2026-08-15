@@ -217,6 +217,17 @@ button {
   background: #2A3D2F;
 }
 
+.btn--secondary {
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+}
+
+.btn--secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 /* ---------------------------------------------
    Content / ledger-rule background
 --------------------------------------------- */
@@ -446,6 +457,111 @@ button {
 .account-card--add span {
   font-size: 14px;
   font-weight: 500;
+}
+
+.account-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  isolation: isolate;
+}
+
+.account-modal[hidden] {
+  display: none;
+}
+
+.account-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: rgba(27, 42, 32, 0.42);
+}
+
+.account-modal__panel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 440px);
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 24px 60px rgba(27, 42, 32, 0.18);
+  padding: 26px 24px 22px;
+}
+
+.account-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.account-modal__header h2 {
+  font-size: 26px;
+}
+
+.account-modal__close {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 24px;
+  line-height: 1;
+}
+
+.account-modal__close:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.account-modal__form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field__label {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+  color: var(--ink-soft);
+}
+
+.field input,
+.field select {
+  width: 100%;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--paper);
+  padding: 12px 14px;
+  color: var(--ink);
+  font: inherit;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(185, 138, 46, 0.12);
+}
+
+.account-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
 }
 
 /* ---------------------------------------------

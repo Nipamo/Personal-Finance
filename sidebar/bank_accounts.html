@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 
 <html lang="de">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bankkonten – Finanzübersicht</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="../style.css">
-
 </head>
+
 <body>
 
-<div class="app">
+  <div class="app">
 
     <aside class="sidebar">
       <div class="brand">
@@ -38,61 +41,104 @@
 
     <div class="main">
 
-        <header class="topbar">
-          <div class="topbar__month">
-            <span>Konten</span>
+      <header class="topbar">
+        <div class="topbar__month">
+          <span>Konten</span>
+        </div>
+        <button class="btn btn--primary fn-add_bank_account">+ Konto hinzufügen</button>
+      </header>
+
+      <main class="content">
+
+        <section class="hero" aria-labelledby="networth-heading">
+          <p class="eyebrow">Gesamtvermögen</p>
+          <h2 id="networth-heading" class="hero__amount">
+            <span class="hero__currency">€</span><span id="total-balance-value">0,00</span>
+          </h2>
+          <p id="total-account-count" class="hero__delta hero__delta--positive">0 Konten verknüpft</p>
+        </section>
+
+        <section aria-labelledby="accounts-heading" class="section">
+          <div class="section__head">
+            <h2 id="accounts-heading">Ihre Konten</h2>
           </div>
-          <button class="btn btn--primary">+ Konto hinzufügen</button>
-        </header>
 
-        <main class="content">
+          <div id="container-bank_accounts" class="account-grid">
 
-            <section class="hero" aria-labelledby="networth-heading">
-              <p class="eyebrow">Gesamtvermögen</p>
-              <h2 id="networth-heading" class="hero__amount">
-                <span class="hero__currency">€</span>10.419<span class="hero__decimals">,43</span>
-              </h2>
-              <p class="hero__delta hero__delta--positive">3 Konten verknüpft</p>
-            </section>
+            <!-- <article class="account-card">
+              <p class="eyebrow account-card__institute">Sparkasse</p>
+              <span class="account-card__name">Girokonto</span>
+              <span class="account-card__type">Laufendes Konto</span>
+              <span class="account-card__balance account-card__balance--positive">2.340,18 €</span>
+            </article>
 
-            <section aria-labelledby="accounts-heading" class="section">
-              <div class="section__head">
-                <h2 id="accounts-heading">Ihre Konten</h2>
-              </div>
+            <article class="account-card">
+              <p class="eyebrow account-card__institute">DKB</p>
+              <span class="account-card__name">Kreditkarte</span>
+              <span class="account-card__type">Revolvierender Kredit</span>
+              <span class="account-card__balance account-card__balance--negative">−420,75 €</span>
+            </article> -->
 
-              <div class="account-grid">
+            <button class="account-card account-card--add fn-add_bank_account" type="button">
+              <span>+ Konto hinzufügen</span>
+            </button>
 
-                <article class="account-card">
-                  <p class="eyebrow account-card__institute">Sparkasse</p>
-                  <span class="account-card__name">Girokonto</span>
-                  <span class="account-card__type">Laufendes Konto</span>
-                  <span class="account-card__balance account-card__balance--positive">2.340,18 €</span>
-                </article>
+          </div>
+        </section>
 
-                <article class="account-card">
-                  <p class="eyebrow account-card__institute">ING</p>
-                  <span class="account-card__name">Tagesgeldkonto</span>
-                  <span class="account-card__type">Rücklagen</span>
-                  <span class="account-card__balance account-card__balance--positive">8.500,00 €</span>
-                </article>
-
-                <article class="account-card">
-                  <p class="eyebrow account-card__institute">DKB</p>
-                  <span class="account-card__name">Kreditkarte</span>
-                  <span class="account-card__type">Revolvierender Kredit</span>
-                  <span class="account-card__balance account-card__balance--negative">−420,75 €</span>
-                </article>
-
-                <button class="account-card account-card--add" type="button">
-                  <span>+ Konto hinzufügen</span>
-                </button>
-
-              </div>
-            </section>
-
-        </main>
+      </main>
     </div>
-</div>
+  </div>
 
+  <div id="account-modal" class="account-modal" hidden>
+    <div class="account-modal__backdrop" data-close="account-modal"></div>
+    <div class="account-modal__panel" role="dialog" aria-modal="true" aria-labelledby="account-modal-title">
+      <div class="account-modal__header">
+        <div>
+          <p class="eyebrow">Neues Konto</p>
+          <h2 id="account-modal-title">Konto anlegen</h2>
+        </div>
+        <button class="account-modal__close" type="button" aria-label="Fenster schließen"
+          data-close="account-modal">×</button>
+      </div>
+
+      <form id="account-form" class="account-modal__form">
+        <label class="field">
+          <span class="field__label">Institut</span>
+          <input type="text" name="institute" placeholder="z. B. Sparkasse" required>
+        </label>
+
+        <label class="field">
+          <span class="field__label">Kontobezeichnung</span>
+          <input type="text" name="name" placeholder="z. B. Girokonto" required>
+        </label>
+
+        <label class="field">
+          <span class="field__label">Kontotyp</span>
+          <select name="type" required>
+            <option value="">Bitte wählen</option>
+            <option value="Girokonto">Girokonto</option>
+            <option value="Sparkonto">Sparkonto</option>
+            <option value="Kreditkarte">Kreditkarte</option>
+            <option value="Depot">Depot</option>
+            <option value="Bargeld">Bargeld</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span class="field__label">Aktueller Kontostand</span>
+          <input type="number" name="balance" step="0.01" placeholder="0,00" value="0">
+        </label>
+
+        <div class="account-modal__actions">
+          <button class="btn btn--secondary" type="button" data-close="account-modal">Abbrechen</button>
+          <button class="btn btn--primary" type="submit">Konto speichern</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="bank_accounts.js"></script>
 </body>
+
 </html>
