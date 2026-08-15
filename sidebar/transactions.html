@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaktionen – Finanzübersicht</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+
+    <div class="app">
+
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="brand__mark">§</span>
+                <span class="brand__name">Hauptbuch</span>
+            </div>
+
+            <nav class="nav" aria-label="Hauptnavigation">
+                <a class="nav__item" href="../index.html">
+                    <span class="nav__label">Übersicht</span>
+                </a>
+                <a class="nav__item" href="bank_accounts.html">
+                    <span class="nav__label">Konten</span>
+                </a>
+                <a class="nav__item" href="budgets.html">
+                    <span class="nav__label">Budgets</span>
+                </a>
+                <a class="nav__item nav__item--active" href="transactions.html">
+                    <span class="nav__label">Transaktionen</span>
+                </a>
+            </nav>
+
+            <div class="sidebar__footer">
+                <span class="sidebar__period">Berichtszeitraum</span>
+                <span class="sidebar__month">August 2026</span>
+            </div>
+        </aside>
+
+        <div class="main">
+
+            <header class="topbar">
+                <div class="topbar__month">
+                    <span>Transaktionen</span>
+                </div>
+                <button class="btn btn--primary fn-add_transaction">+ Transaktion hinzufügen</button>
+            </header>
+
+            <main class="content">
+
+                <section class="hero" aria-labelledby="transactions-heading">
+                    <p class="eyebrow">Gesamtausgaben</p>
+                    <h2 id="transactions-heading" class="hero__amount">
+                        <span class="hero__currency">€</span><span id="transactions-total-expense">0,00</span>
+                    </h2>
+                    <p id="transactions-summary" class="hero__delta hero__delta--positive">0 Transaktionen</p>
+                </section>
+
+                <section aria-labelledby="transactions-list-heading" class="section">
+                    <div class="section__head">
+                        <h2 id="transactions-list-heading">Letzte Buchungen</h2>
+                    </div>
+
+                    <div class="ledger">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Beschreibung</th>
+                                    <th scope="col">Budget</th>
+                                    <th scope="col">Konto</th>
+                                    <th scope="col">Datum</th>
+                                    <th scope="col">Typ</th>
+                                    <th scope="col" class="align-right">Betrag</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactions-table-body"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <div id="transaction-modal" class="account-modal" hidden>
+        <div class="account-modal__backdrop" data-close="transaction-modal"></div>
+        <div class="account-modal__panel" role="dialog" aria-modal="true" aria-labelledby="transaction-modal-title">
+            <div class="account-modal__header">
+                <div>
+                    <p class="eyebrow">Neue Transaktion</p>
+                    <h2 id="transaction-modal-title">Buchung erfassen</h2>
+                </div>
+                <button class="account-modal__close" type="button" aria-label="Fenster schließen"
+                    data-close="transaction-modal">×</button>
+            </div>
+
+            <form id="transaction-form" class="account-modal__form">
+                <label class="field">
+                    <span class="field__label">Beschreibung</span>
+                    <input type="text" name="description" placeholder="z. B. Supermarkt" required>
+                </label>
+
+                <label class="field">
+                    <span class="field__label">Betroffene Budget</span>
+                    <select id="transaction-budget-select" name="budget" required></select>
+                </label>
+
+                <label class="field">
+                    <span class="field__label">Datum</span>
+                    <input type="date" name="date" required>
+                </label>
+
+                <label class="field">
+                    <span class="field__label">Betrag</span>
+                    <input type="number" name="amount" step="0.01" min="0.01" placeholder="0,00" required>
+                </label>
+
+                <label class="field">
+                    <span class="field__label">Typ</span>
+                    <select name="type" required>
+                        <option value="">Bitte wählen</option>
+                        <option value="expense">Ausgabe</option>
+                        <option value="income">Einnahme</option>
+                    </select>
+                </label>
+
+                <div class="account-modal__actions">
+                    <button class="btn btn--secondary" type="button" data-close="transaction-modal">Abbrechen</button>
+                    <button class="btn btn--primary" type="submit">Transaktion speichern</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const ACCOUNTS_STORAGE_KEY = 'personal_finance_bank_accounts';
+        const BUDGET_STORAGE_KEY = 'personal_finance_budgets';
+        const TRANSACTIONS_STORAGE_KEY = 'personal_finance_transactions';
+
+        const transactions_table_body = document.getElementById('transactions-table-body');
+        const transactions_total_expense = document.getElementById('transactions-total-expense');
+        const transactions_summary = document.getElementById('transactions-summary');
+        const transaction_modal = document.getElementById('transaction-modal');
+        const transaction_form = document.getElementById('transaction-form');
+        const transaction_budget_select = document.getElementById('transaction-budget-select');
+
+        function getSavedAccounts() {
+            try {
+                const raw = localStorage.getItem(ACCOUNTS_STORAGE_KEY);
+                if (!raw) return [];
+
+                const parsed = JSON.parse(raw);
+                if (!Array.isArray(parsed)) return [];
+
+                return parsed.map((account) => {
+                    const accountKey = `${String(account.institute || 'Institut')} | ${String(account.name || 'Konto')}`;
+
+                    return {
+                        id: String(account.id || `${account.institute}-${account.name}`),
+                        institute: String(account.institute || 'Institut'),
+                        name: String(account.name || 'Konto'),
+                        type: String(account.type || 'Konto'),
+                        balance: Number.parseFloat(account.balance) || 0,
+                        key: accountKey,
+                        accountKey,
+                    };
+                });
+            } catch (error) {
+                console.warn('Fehler beim Laden der Konten:', error);
+                return [];
+            }
+        }
+
+        function getSavedBudgets() {
+            try {
+                const raw = localStorage.getItem(BUDGET_STORAGE_KEY);
+                if (!raw) return [];
+
+                const parsed = JSON.parse(raw);
+                if (!Array.isArray(parsed)) return [];
+
+                return parsed.map((budget) => ({
+                    id: String(budget.id || (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`)),
+                    name: String(budget.name || 'Budget'),
+                    account: String(budget.account || budget.accountKey || 'Unbekannt'),
+                    accountKey: String(budget.accountKey || budget.account || 'Unbekannt'),
+                    type: budget.type === 'incremental' ? 'incremental' : 'fixed',
+                    targetAmount: Number.parseFloat(budget.targetAmount) || Number.parseFloat(budget.amount) || 0,
+                    amount: Number.parseFloat(budget.amount) || Number.parseFloat(budget.targetAmount) || 0,
+                    currentAmount: Number.parseFloat(budget.currentAmount) || Number.parseFloat(budget.used) || 0,
+                    used: Number.parseFloat(budget.used) || Number.parseFloat(budget.currentAmount) || 0,
+                }));
+            } catch (error) {
+                console.warn('Fehler beim Laden der Budgets:', error);
+                return [];
+            }
+        }
+
+        function getSavedTransactions() {
+            try {
+                const raw = localStorage.getItem(TRANSACTIONS_STORAGE_KEY);
+                if (!raw) return [];
+
+                const parsed = JSON.parse(raw);
+                if (!Array.isArray(parsed)) return [];
+
+                return parsed.map((transaction) => ({
+                    id: String(transaction.id || (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`)),
+                    description: String(transaction.description || 'Transaktion'),
+                    budget: String(transaction.budget || 'Budget'),
+                    budgetId: String(transaction.budgetId || transaction.budget || 'Budget'),
+                    budgetKey: String(transaction.budgetKey || transaction.budget || 'Budget'),
+                    amount: Number.parseFloat(transaction.amount) || 0,
+                    type: String(transaction.type || 'expense'),
+                    createdAt: String(transaction.createdAt || new Date().toISOString()),
+                }));
+            } catch (error) {
+                console.warn('Fehler beim Laden der Transaktionen:', error);
+                return [];
+            }
+        }
+
+        function getTodayDateValue() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        function saveTransactions(transactions) {
+            localStorage.setItem(TRANSACTIONS_STORAGE_KEY, JSON.stringify(transactions));
+        }
+
+        function saveBudgets(budgets) {
+            localStorage.setItem(BUDGET_STORAGE_KEY, JSON.stringify(budgets));
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('de-DE', {
+                style: 'currency',
+                currency: 'EUR',
+            }).format(value);
+        }
+
+        function formatDate(value) {
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) {
+                return '—';
+            }
+
+            return new Intl.DateTimeFormat('de-DE', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+            }).format(date);
+        }
+
+        function updateBudgetAndAccountBalances(budgetId, amount, type) {
+            const budgets = getSavedBudgets();
+            const accounts = getSavedAccounts();
+            const budgetIndex = budgets.findIndex((entry) => entry.id === budgetId);
+
+            if (budgetIndex === -1) {
+                return;
+            }
+
+            const budget = budgets[budgetIndex];
+            const nextUsed = type === 'expense' ? budget.used + amount : Math.max(budget.used - amount, 0);
+            budget.used = nextUsed;
+            budget.currentAmount = nextUsed;
+            budgets[budgetIndex] = budget;
+
+            const account = accounts.find((entry) => entry.key === budget.accountKey || entry.accountKey === budget.accountKey);
+            if (account) {
+                const currentBalance = Number.parseFloat(account.balance) || 0;
+                account.balance = type === 'expense' ? currentBalance - amount : currentBalance + amount;
+                const index = accounts.findIndex((entry) => entry.key === account.key || entry.accountKey === account.key);
+                if (index >= 0) {
+                    accounts[index] = account;
+                    localStorage.setItem(ACCOUNTS_STORAGE_KEY, JSON.stringify(accounts));
+                }
+            }
+
+            saveBudgets(budgets);
+        }
+
+        function populateBudgetSelect() {
+            const budgets = getSavedBudgets();
+            transaction_budget_select.innerHTML = '';
+
+            if (!budgets.length) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'Bitte erst Budget anlegen';
+                transaction_budget_select.appendChild(option);
+                transaction_budget_select.disabled = true;
+                return;
+            }
+
+            transaction_budget_select.disabled = false;
+            const empty_option = document.createElement('option');
+            empty_option.value = '';
+            empty_option.textContent = 'Bitte wählen';
+            transaction_budget_select.appendChild(empty_option);
+
+            budgets.forEach((budget) => {
+                const option = document.createElement('option');
+                option.value = budget.id;
+                option.textContent = `${budget.name} · ${budget.account}`;
+                transaction_budget_select.appendChild(option);
+            });
+
+            const selectedBudgetId = new URLSearchParams(window.location.search).get('budgetId');
+            if (selectedBudgetId && budgets.some((budget) => budget.id === selectedBudgetId)) {
+                transaction_budget_select.value = selectedBudgetId;
+            }
+        }
+
+        function renderTransactions() {
+            const transactions = getSavedTransactions();
+            const budgets = getSavedBudgets();
+            transactions_table_body.innerHTML = '';
+
+            if (!transactions.length) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="6" class="empty-table">Keine Transaktionen vorhanden.</td>';
+                transactions_table_body.appendChild(row);
+            } else {
+                const sortedTransactions = [...transactions].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                sortedTransactions.forEach((transaction) => {
+                    const row = document.createElement('tr');
+                    const matchingBudget = budgets.find((entry) => entry.id === transaction.budgetId) || budgets.find((entry) => entry.name === transaction.budget);
+                    const budgetName = matchingBudget ? matchingBudget.name : transaction.budget || 'Budget';
+                    const accountName = matchingBudget ? matchingBudget.account : transaction.budgetKey || 'Konto';
+                    const type_label = transaction.type === 'income' ? 'Einnahme' : 'Ausgabe';
+                    const amount_class = transaction.type === 'income' ? 'amount amount--positive' : 'amount amount--negative';
+                    const sign = transaction.type === 'income' ? '+' : '−';
+
+                    row.innerHTML = `
+            <td>${transaction.description}</td>
+            <td>${budgetName}</td>
+            <td>${accountName}</td>
+            <td>${formatDate(transaction.createdAt)}</td>
+            <td>${type_label}</td>
+            <td class="align-right ${amount_class}">${sign}${formatCurrency(Math.abs(transaction.amount))}</td>
+          `;
+
+                    transactions_table_body.appendChild(row);
+                });
+            }
+
+            const total_expense = transactions
+                .filter((transaction) => transaction.type === 'expense')
+                .reduce((sum, transaction) => sum + transaction.amount, 0);
+
+            transactions_total_expense.textContent = new Intl.NumberFormat('de-DE', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            }).format(total_expense);
+
+            transactions_summary.textContent = `${transactions.length} ${transactions.length === 1 ? 'Transaktion' : 'Transaktionen'}`;
+        }
+
+        document.querySelectorAll('.fn-add_transaction').forEach((button) => {
+            button.addEventListener('click', () => {
+                populateBudgetSelect();
+                transaction_form.elements.date.value = getTodayDateValue();
+                transaction_modal.hidden = false;
+                if (transaction_budget_select && !transaction_budget_select.disabled) {
+                    transaction_budget_select.focus();
+                }
+            });
+        });
+
+        document.querySelectorAll('[data-close="transaction-modal"]').forEach((element) => {
+            element.addEventListener('click', () => {
+                transaction_modal.hidden = true;
+                transaction_form.reset();
+            });
+        });
+
+        transaction_form.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const form_data = new FormData(transaction_form);
+            const description = (form_data.get('description') || '').toString().trim();
+            const budgetId = (form_data.get('budget') || '').toString().trim();
+            const amount = Number.parseFloat((form_data.get('amount') || '0').toString()) || 0;
+            const type = (form_data.get('type') || '').toString().trim();
+            const selectedDate = (form_data.get('date') || '').toString().trim() || getTodayDateValue();
+
+            if (!description || !budgetId || amount <= 0 || !type || !selectedDate) {
+                return;
+            }
+
+            const budgets = getSavedBudgets();
+            const budget = budgets.find((entry) => entry.id === budgetId);
+
+            if (!budget) {
+                return;
+            }
+
+            const transactions = getSavedTransactions();
+            transactions.push({
+                id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
+                description,
+                budget: budget.name,
+                budgetId,
+                budgetKey: budget.accountKey,
+                amount,
+                type,
+                createdAt: new Date(`${selectedDate}T12:00:00`).toISOString(),
+            });
+
+            saveTransactions(transactions);
+            updateBudgetAndAccountBalances(budgetId, amount, type);
+            renderTransactions();
+            transaction_form.reset();
+            transaction_modal.hidden = true;
+        });
+
+        renderTransactions();
+        populateBudgetSelect();
+
+        const preselectedBudgetId = new URLSearchParams(window.location.search).get('budgetId');
+        if (preselectedBudgetId) {
+            transaction_budget_select.value = preselectedBudgetId;
+            transaction_modal.hidden = false;
+            if (transaction_budget_select && !transaction_budget_select.disabled) {
+                transaction_budget_select.focus();
+            }
+        }
+    </script>
+</body>
+
+</html>

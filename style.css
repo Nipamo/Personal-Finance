@@ -11,11 +11,14 @@
   --line: #CBD8C6;
   --line-strong: #A9BBA3;
 
-  --accent: #B98A2E;       /* brass — budgets, focus, signature */
+  --accent: #B98A2E;
+  /* brass — budgets, focus, signature */
   --accent-soft: #E6D5AC;
-  --positive: #2F6E4F;      /* forest green */
+  --positive: #2F6E4F;
+  /* forest green */
   --positive-soft: #DCEAE0;
-  --negative: #A6432D;      /* brick */
+  --negative: #A6432D;
+  /* brick */
   --negative-soft: #F1DDD6;
   --warn: #B98A2E;
 
@@ -30,9 +33,12 @@
 /* ---------------------------------------------
    Reset & base
 --------------------------------------------- */
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
 }
@@ -46,7 +52,8 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2 {
+h1,
+h2 {
   font-family: var(--font-display);
   font-weight: 500;
   margin: 0;
@@ -69,7 +76,10 @@ button {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; animation: none !important; }
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
 }
 
 /* ---------------------------------------------
@@ -236,13 +246,11 @@ button {
   display: flex;
   flex-direction: column;
   gap: 44px;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent,
-    transparent 35px,
-    var(--line) 35px,
-    var(--line) 36px
-  );
+  background-image: repeating-linear-gradient(to bottom,
+      transparent,
+      transparent 35px,
+      var(--line) 35px,
+      var(--line) 36px);
 }
 
 /* ---------------------------------------------
@@ -287,8 +295,13 @@ button {
   font-size: 13px;
 }
 
-.hero__delta--positive { color: var(--positive); }
-.hero__delta--negative { color: var(--negative); }
+.hero__delta--positive {
+  color: var(--positive);
+}
+
+.hero__delta--negative {
+  color: var(--negative);
+}
 
 /* ---------------------------------------------
    Section head
@@ -324,6 +337,21 @@ button {
   gap: 16px;
 }
 
+.empty-state {
+  grid-column: 1 / -1;
+  background: var(--sheet);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+  padding: 26px 20px;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 14px;
+}
+
 .budget-card {
   background: var(--sheet);
   border: 1px solid var(--line);
@@ -336,11 +364,37 @@ button {
   justify-content: space-between;
   align-items: baseline;
   margin-bottom: 10px;
+  gap: 12px;
+}
+
+.budget-card__title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .budget-card__label {
   font-weight: 500;
   font-size: 14px;
+}
+
+.budget-card__favorite {
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--warn);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-size: 14px;
+}
+
+.budget-card__favorite:hover {
+  border-color: var(--accent);
+  background: rgba(185, 138, 46, 0.08);
 }
 
 .budget-card__figures {
@@ -362,8 +416,13 @@ button {
   border-radius: 3px;
 }
 
-.budget-card__fill--warn { background: var(--warn); }
-.budget-card__fill--over { background: var(--negative); }
+.budget-card__fill--warn {
+  background: var(--warn);
+}
+
+.budget-card__fill--over {
+  background: var(--negative);
+}
 
 .budget-card__note {
   margin: 8px 0 0;
@@ -371,8 +430,64 @@ button {
   color: var(--ink-faint);
 }
 
-.budget-card__note--warn { color: var(--warn); }
-.budget-card__note--over { color: var(--negative); }
+.budget-card__note--warn {
+  color: var(--warn);
+}
+
+.budget-card__note--over {
+  color: var(--negative);
+}
+
+.budget-card__menu {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.budget-card__mini {
+  flex: 1;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--ink);
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.budget-card__mini:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.budget-card__mini--danger {
+  color: var(--negative);
+  border-color: rgba(166, 67, 45, 0.4);
+}
+
+.budget-card__mini--danger:hover {
+  border-color: var(--negative);
+  color: var(--negative);
+}
+
+.budget-card__action {
+  margin-top: 12px;
+  width: 100%;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--ink);
+  padding: 9px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.budget-card__action:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
 
 /* ---------------------------------------------
    Page head (non-monthly pages)
@@ -434,8 +549,45 @@ button {
   margin-top: 6px;
 }
 
-.account-card__balance--positive { color: var(--positive); }
-.account-card__balance--negative { color: var(--negative); }
+.account-card__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.account-card__action {
+  flex: 1;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--ink);
+  padding: 8px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.account-card__action:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.account-card__action--danger {
+  color: var(--negative);
+  border-color: rgba(166, 67, 45, 0.4);
+}
+
+.account-card__action--danger:hover {
+  border-color: var(--negative);
+  color: var(--negative);
+}
+
+.account-card__balance--positive {
+  color: var(--positive);
+}
+
+.account-card__balance--negative {
+  color: var(--negative);
+}
 
 .account-card--add {
   border: 1px dashed var(--line-strong);
@@ -550,6 +702,23 @@ button {
   font: inherit;
 }
 
+.field--checkbox {
+  gap: 10px;
+}
+
+.checkbox-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.checkbox-inline input {
+  width: auto;
+  accent-color: var(--accent);
+}
+
 .field input:focus,
 .field select:focus {
   border-color: var(--accent);
@@ -605,15 +774,22 @@ tbody tr:hover {
   background: var(--paper);
 }
 
-.align-right { text-align: right; }
+.align-right {
+  text-align: right;
+}
 
 .amount {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
 
-.amount--positive { color: var(--positive); }
-.amount--negative { color: var(--negative); }
+.amount--positive {
+  color: var(--positive);
+}
+
+.amount--negative {
+  color: var(--negative);
+}
 
 .tag {
   display: inline-block;
@@ -638,19 +814,26 @@ tbody tr:hover {
     padding: 14px 20px;
   }
 
-  .brand { margin-bottom: 0; }
+  .brand {
+    margin-bottom: 0;
+  }
 
   .nav {
     flex-direction: row;
     overflow-x: auto;
   }
 
-  .sidebar__footer { display: none; }
+  .sidebar__footer {
+    display: none;
+  }
 
-  .topbar, .content {
+  .topbar,
+  .content {
     padding-left: 20px;
     padding-right: 20px;
   }
 
-  .hero__amount { font-size: 40px; }
+  .hero__amount {
+    font-size: 40px;
+  }
 }
